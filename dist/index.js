@@ -150,10 +150,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const ownership_1 = __nccwpck_require__(6224);
+const fs_1 = __importDefault(__nccwpck_require__(5747));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -167,8 +171,8 @@ function run() {
                 core.setFailed('❌ Missing codeowners filepath');
                 return;
             }
-            const ownershipJsonInput = core.getInput('ownership_json');
-            if (!ownershipJsonInput) {
+            const ownershipJsonFilePath = core.getInput('ownership_json_file_path');
+            if (!ownershipJsonFilePath) {
                 core.setFailed('❌ Missing ownership JSON');
                 return;
             }
@@ -185,7 +189,7 @@ function run() {
                     return item.filename;
                 });
                 const owners = yield (0, ownership_1.getOwnership)(codeownersFilepath, filepaths);
-                const ownershipJson = JSON.parse(ownershipJsonInput);
+                const ownershipJson = JSON.parse(fs_1.default.readFileSync(ownershipJsonFilePath, 'utf-8'));
                 const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
                     owner: 'OWNER',
                     repo: 'REPO',

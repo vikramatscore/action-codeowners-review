@@ -5,9 +5,9 @@ inputs:
   codeowners_file_path:
     required: true
     description: 'Codeowners file path'
-  ownership_json:
+  ownership_json_file_path:
     required: true
-    description: 'Team definition'
+    description: 'Team definition file path'
   github_token:
     required: true
     description: 'Token used to fetch info using Github API'

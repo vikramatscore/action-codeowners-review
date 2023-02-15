@@ -20,9 +20,9 @@ async function run(): Promise<void> {
       return
     }
 
-    const ownershipJsonInput = core.getInput('ownership_json')
+    const ownershipJsonFilePath = core.getInput('ownership_json_file_path')
 
-    if (!ownershipJsonInput) {
+    if (!ownershipJsonFilePath) {
       core.setFailed('❌ Missing ownership JSON')
       return
     }
@@ -50,7 +50,7 @@ async function run(): Promise<void> {
       });
 
       const owners = await getOwnership(codeownersFilepath, filepaths);
-      const ownershipJson = JSON.parse(ownershipJsonInput) as Team[]
+      const ownershipJson = JSON.parse(fs.readFileSync(ownershipJsonFilePath, 'utf-8')) as Team[]
       const currentReviewersResponse = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
         owner: 'OWNER',
         repo: 'REPO',
