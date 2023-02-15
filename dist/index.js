@@ -178,6 +178,7 @@ function run() {
             }
             const pullRequest = github.context.payload.pull_request;
             if (pullRequest) {
+                console.log("Found pull request");
                 const octokit = github.getOctokit(token);
                 const { repo: { repo: repoName, owner: repoOwner }, runId: runId } = github.context;
                 const defaultParameter = {
@@ -185,22 +186,31 @@ function run() {
                     owner: repoOwner
                 };
                 const files = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', Object.assign(Object.assign({}, defaultParameter), { pull_number: pullRequest.number }));
+                console.log("Files: " + files.data.length);
                 const filepaths = files.data.map((item) => {
                     return item.filename;
                 });
+                console.log("File paths: " + filepaths);
                 const owners = yield (0, ownership_1.getOwnership)(codeownersFilepath, filepaths);
+                console.log("Owners: " + owners);
                 const ownershipJson = JSON.parse(fs_1.default.readFileSync(ownershipJsonFilePath, 'utf-8'));
+                console.log("Ownership JSON: " + JSON.stringify(ownershipJson));
                 const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
                     owner: 'OWNER',
                     repo: 'REPO',
                     pull_number: pullRequest.number
                 });
                 const currentReviewersUsers = currentReviewersResponse.data.users.map((user) => user.login);
+                console.log("Current reviewers: " + currentReviewersUsers);
                 const reviewersToAdd = yield (0, ownership_1.computeReviewers)(ownershipJson, owners, currentReviewersUsers);
                 core.info('final owners: ' + JSON.stringify(reviewersToAdd));
             }
+            else {
+                console.log("Pull request not found");
+            }
         }
         catch (error) {
+            console.log("Error: " + JSON.stringify(error));
             if (error instanceof Error)
                 core.setFailed("Caught an error: " + error.message);
         }
