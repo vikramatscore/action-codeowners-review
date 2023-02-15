@@ -195,11 +195,7 @@ function run() {
                 console.log("Owners: " + owners);
                 const ownershipJson = JSON.parse(fs_1.default.readFileSync(ownershipJsonFilePath, 'utf-8'));
                 console.log("Ownership JSON: " + JSON.stringify(ownershipJson));
-                const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
-                    owner: 'OWNER',
-                    repo: 'REPO',
-                    pull_number: pullRequest.number
-                });
+                const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', Object.assign(Object.assign({}, defaultParameter), { pull_number: pullRequest.number }));
                 const currentReviewersUsers = currentReviewersResponse.data.users.map((user) => user.login);
                 console.log("Current reviewers: " + currentReviewersUsers);
                 const reviewersToAdd = yield (0, ownership_1.computeReviewers)(ownershipJson, owners, currentReviewersUsers);

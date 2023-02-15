@@ -58,8 +58,7 @@ async function run(): Promise<void> {
       const ownershipJson = JSON.parse(fs.readFileSync(ownershipJsonFilePath, 'utf-8')) as Team[]
       console.log("Ownership JSON: " + JSON.stringify(ownershipJson))
       const currentReviewersResponse = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
-        owner: 'OWNER',
-        repo: 'REPO',
+        ...defaultParameter,
         pull_number: pullRequest.number
       })
       const currentReviewersUsers = currentReviewersResponse.data.users.map((user) => user.login);
