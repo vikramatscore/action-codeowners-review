@@ -63,7 +63,8 @@ async function run(): Promise<void> {
       })
       const currentReviewersUsers = currentReviewersResponse.data.users.map((user) => user.login);
       console.log("Current reviewers: " + currentReviewersUsers)
-      const reviewersToAdd = await computeReviewers(ownershipJson, owners, currentReviewersUsers)
+      console.log("Actor: " + github.context.actor)
+      const reviewersToAdd = await computeReviewers(ownershipJson, owners, currentReviewersUsers, github.context.actor)
       
       core.info('final owners: ' + JSON.stringify(reviewersToAdd))
     } else {

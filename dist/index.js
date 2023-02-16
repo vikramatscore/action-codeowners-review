@@ -198,7 +198,8 @@ function run() {
                 const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', Object.assign(Object.assign({}, defaultParameter), { pull_number: pullRequest.number }));
                 const currentReviewersUsers = currentReviewersResponse.data.users.map((user) => user.login);
                 console.log("Current reviewers: " + currentReviewersUsers);
-                const reviewersToAdd = yield (0, ownership_1.computeReviewers)(ownershipJson, owners, currentReviewersUsers);
+                console.log("Actor: " + github.context.actor);
+                const reviewersToAdd = yield (0, ownership_1.computeReviewers)(ownershipJson, owners, currentReviewersUsers, github.context.actor);
                 core.info('final owners: ' + JSON.stringify(reviewersToAdd));
             }
             else {
@@ -244,13 +245,13 @@ const getOwnership = (codeowners, filePaths) => __awaiter(void 0, void 0, void 0
     return allOwners;
 });
 exports.getOwnership = getOwnership;
-const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers) => __awaiter(void 0, void 0, void 0, function* () {
+const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers, actor) => __awaiter(void 0, void 0, void 0, function* () {
     const toAdd = new Set();
     for (const owner of ownersForFileChanges) {
         const matchedTeam = findTeam(teams, owner);
         console.log(`owner: ${owner}, matchedTeam: ${JSON.stringify(matchedTeam)}`);
         if (matchedTeam) {
-            const randomTeamMember = findRandomTeamMember(matchedTeam);
+            const randomTeamMember = findRandomTeamMember(matchedTeam, actor);
             console.log(`randomTeamMember: ${randomTeamMember}`);
             if (randomTeamMember && !isAlreadyAReviewer(currentReviewersUsers, randomTeamMember)) {
                 toAdd.add(randomTeamMember);
@@ -272,9 +273,9 @@ function findTeam(teams, owner) {
     }
     return null;
 }
-function findRandomTeamMember(team) {
+function findRandomTeamMember(team, actor) {
     const availableTeamMembers = team.members.filter((member) => {
-        return !member.ignore;
+        return member.name !== actor && !member.ignore;
     });
     if (availableTeamMembers.length >= 1) {
         return availableTeamMembers[Math.floor(Math.random() * availableTeamMembers.length)].name;
@@ -284,6 +285,7 @@ function findRandomTeamMember(team) {
 function isAlreadyAReviewer(currentReviewersUsers, user) {
     const re = /^@/;
     const sanitizedUsername = user.replace(re, "");
+    console.log(`includes? ${currentReviewersUsers.includes(sanitizedUsername)}`);
     return currentReviewersUsers.includes(sanitizedUsername);
 }
 
