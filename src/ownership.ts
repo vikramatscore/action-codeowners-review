@@ -1,5 +1,4 @@
 import { OwnershipEngine } from './OwnershipEngine';
-import fs from 'fs'
 
 export const getOwnership = async (codeowners: string, filePaths: string[]): Promise<Set<string>> => {
   const engine = OwnershipEngine.FromCodeownersFile(codeowners);
@@ -22,7 +21,7 @@ export const computeReviewers = async (
 
     for (const owner of ownersForFileChanges) {
         const matchedTeam = findTeam(teams, owner)
-        console.log(`owner: ${owner}, matchedTeam: ${matchedTeam}`)
+        console.log(`owner: ${owner}, matchedTeam: ${JSON.stringify(matchedTeam)}`)
         if (matchedTeam) {
             const randomTeamMember = findRandomTeamMember(matchedTeam)
             console.log(`randomTeamMember: ${randomTeamMember}`)
@@ -34,7 +33,7 @@ export const computeReviewers = async (
         }
     }
 
-    console.log(`final reviewers: ${toAdd}`)
+    console.log(`final reviewers: ${JSON.stringify(toAdd)}`)
 
     return toAdd
   };
@@ -50,7 +49,7 @@ function findTeam(teams: Team[], owner: string) {
 
 function findRandomTeamMember(team: Team) {
     const availableTeamMembers = team.members.filter((member) => {
-        !member.ignore
+        return !member.ignore
     })
     if (availableTeamMembers.length >= 1) {
         return availableTeamMembers[Math.floor(Math.random() * availableTeamMembers.length)].name

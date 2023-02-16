@@ -248,7 +248,7 @@ const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers) =>
     const toAdd = new Set();
     for (const owner of ownersForFileChanges) {
         const matchedTeam = findTeam(teams, owner);
-        console.log(`owner: ${owner}, matchedTeam: ${matchedTeam}`);
+        console.log(`owner: ${owner}, matchedTeam: ${JSON.stringify(matchedTeam)}`);
         if (matchedTeam) {
             const randomTeamMember = findRandomTeamMember(matchedTeam);
             console.log(`randomTeamMember: ${randomTeamMember}`);
@@ -260,7 +260,7 @@ const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers) =>
             toAdd.add(owner);
         }
     }
-    console.log(`final reviewers: ${toAdd}`);
+    console.log(`final reviewers: ${JSON.stringify(toAdd)}`);
     return toAdd;
 });
 exports.computeReviewers = computeReviewers;
@@ -274,7 +274,7 @@ function findTeam(teams, owner) {
 }
 function findRandomTeamMember(team) {
     const availableTeamMembers = team.members.filter((member) => {
-        !member.ignore;
+        return !member.ignore;
     });
     if (availableTeamMembers.length >= 1) {
         return availableTeamMembers[Math.floor(Math.random() * availableTeamMembers.length)].name;
