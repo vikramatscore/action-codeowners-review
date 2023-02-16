@@ -58,7 +58,9 @@ function findRandomTeamMember(team: Team) {
 }
 
 function isAlreadyAReviewer(currentReviewersUsers: string[], user: string) {
-    return currentReviewersUsers.includes(`@${user}`)
+    const re = /^@/
+    const sanitizedUsername = user.replace(re, "")
+    return currentReviewersUsers.includes(sanitizedUsername)
 }
 
 export interface TeamMember {

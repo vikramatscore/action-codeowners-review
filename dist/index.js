@@ -282,7 +282,9 @@ function findRandomTeamMember(team) {
     return null;
 }
 function isAlreadyAReviewer(currentReviewersUsers, user) {
-    return currentReviewersUsers.includes(`@${user}`);
+    const re = /^@/;
+    const sanitizedUsername = user.replace(re, "");
+    return currentReviewersUsers.includes(sanitizedUsername);
 }
 
 
