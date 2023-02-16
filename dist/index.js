@@ -236,35 +236,37 @@ exports.computeReviewers = exports.getOwnership = void 0;
 const OwnershipEngine_1 = __nccwpck_require__(7207);
 const getOwnership = (codeowners, filePaths) => __awaiter(void 0, void 0, void 0, function* () {
     const engine = OwnershipEngine_1.OwnershipEngine.FromCodeownersFile(codeowners);
-    const owned = [];
+    const allOwners = new Set();
     for (const filePath of filePaths) {
         const owners = engine.calcFileOwnership(filePath);
-        owned.push(...owners);
+        owners.forEach(allOwners.add, allOwners);
     }
-    return owned;
+    return allOwners;
 });
 exports.getOwnership = getOwnership;
 const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers) => __awaiter(void 0, void 0, void 0, function* () {
-    const toAdd = [];
-    const toAdd1 = new Set();
+    const toAdd = new Set();
     for (const owner of ownersForFileChanges) {
         const matchedTeam = findTeam(teams, owner);
+        console.log(`owner: ${owner}, matchedTeam: ${matchedTeam}`);
         if (matchedTeam) {
             const randomTeamMember = findRandomTeamMember(matchedTeam);
+            console.log(`randomTeamMember: ${randomTeamMember}`);
             if (randomTeamMember && !isAlreadyAReviewer(currentReviewersUsers, randomTeamMember)) {
-                toAdd.push(randomTeamMember);
+                toAdd.add(randomTeamMember);
             }
         }
         else {
-            toAdd.push(owner);
+            toAdd.add(owner);
         }
     }
+    console.log(`final reviewers: ${toAdd}`);
     return toAdd;
 });
 exports.computeReviewers = computeReviewers;
 function findTeam(teams, owner) {
     for (const team of teams) {
-        if (team.name == owner) {
+        if (team.name === owner) {
             return team;
         }
     }

@@ -1,45 +1,47 @@
 import { OwnershipEngine } from './OwnershipEngine';
 import fs from 'fs'
 
-export const getOwnership = async (codeowners: string, filePaths: string[]): Promise<string[]> => {
+export const getOwnership = async (codeowners: string, filePaths: string[]): Promise<Set<string>> => {
   const engine = OwnershipEngine.FromCodeownersFile(codeowners);
-
-  const owned: string[] = [];
+  const allOwners = new Set<string>();
 
   for (const filePath of filePaths) {
     const owners = engine.calcFileOwnership(filePath);
-    owned.push(...owners);
+    owners.forEach(allOwners.add, allOwners);
   }
 
-  return owned;
+  return allOwners;
 };
 
 export const computeReviewers = async (
     teams: Team[],
-    ownersForFileChanges: string[],
+    ownersForFileChanges: Set<string>,
     currentReviewersUsers: string[]
-): Promise<string[]> => {
-    const toAdd: string[] = []
-    const toAdd1 = new Set<string>()
+): Promise<Set<string>> => {
+    const toAdd = new Set<string>()
 
     for (const owner of ownersForFileChanges) {
         const matchedTeam = findTeam(teams, owner)
+        console.log(`owner: ${owner}, matchedTeam: ${matchedTeam}`)
         if (matchedTeam) {
             const randomTeamMember = findRandomTeamMember(matchedTeam)
+            console.log(`randomTeamMember: ${randomTeamMember}`)
             if (randomTeamMember && !isAlreadyAReviewer(currentReviewersUsers, randomTeamMember)) {
-                toAdd.push(randomTeamMember)
+                toAdd.add(randomTeamMember)
             }
         } else {
-          toAdd.push(owner)
+            toAdd.add(owner)
         }
-      }
+    }
+
+    console.log(`final reviewers: ${toAdd}`)
 
     return toAdd
   };
 
 function findTeam(teams: Team[], owner: string) {
     for (const team of teams) {
-        if (team.name == owner) {
+        if (team.name === owner) {
             return team
         }
     }
