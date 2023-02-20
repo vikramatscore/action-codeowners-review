@@ -192,7 +192,7 @@ function run() {
                 });
                 console.log("File paths: " + filepaths);
                 const owners = yield (0, ownership_1.getOwnership)(codeownersFilepath, filepaths);
-                console.log("Owners: " + owners);
+                console.log("Owners: " + JSON.stringify([...owners]));
                 const ownershipJson = JSON.parse(fs_1.default.readFileSync(ownershipJsonFilePath, 'utf-8'));
                 console.log("Ownership JSON: " + JSON.stringify(ownershipJson));
                 const currentReviewersResponse = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', Object.assign(Object.assign({}, defaultParameter), { pull_number: pullRequest.number }));
@@ -200,7 +200,7 @@ function run() {
                 console.log("Current reviewers: " + currentReviewersUsers);
                 console.log("Actor: " + github.context.actor);
                 const reviewersToAdd = yield (0, ownership_1.computeReviewers)(ownershipJson, owners, currentReviewersUsers, github.context.actor);
-                core.info('final owners: ' + JSON.stringify(reviewersToAdd));
+                core.info('final owners: ' + JSON.stringify([...reviewersToAdd]));
             }
             else {
                 console.log("Pull request not found");
@@ -263,7 +263,7 @@ const computeReviewers = (teams, ownersForFileChanges, currentReviewersUsers, ac
             toAdd.add(owner);
         }
     }
-    console.log(`final reviewers: ${JSON.stringify(toAdd)}`);
+    console.log(`final reviewers: ${JSON.stringify([...toAdd])}`);
     return toAdd;
 });
 exports.computeReviewers = computeReviewers;

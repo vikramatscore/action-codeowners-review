@@ -36,7 +36,7 @@ export const computeReviewers = async (
         }
     }
 
-    console.log(`final reviewers: ${JSON.stringify(toAdd)}`)
+    console.log(`final reviewers: ${JSON.stringify([...toAdd])}`)
 
     return toAdd
   };

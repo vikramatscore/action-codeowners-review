@@ -54,7 +54,7 @@ async function run(): Promise<void> {
       console.log("File paths: " + filepaths)
 
       const owners = await getOwnership(codeownersFilepath, filepaths);
-      console.log("Owners: " + owners)
+      console.log("Owners: " + JSON.stringify([...owners]))
       const ownershipJson = JSON.parse(fs.readFileSync(ownershipJsonFilePath, 'utf-8')) as Team[]
       console.log("Ownership JSON: " + JSON.stringify(ownershipJson))
       const currentReviewersResponse = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
@@ -66,7 +66,7 @@ async function run(): Promise<void> {
       console.log("Actor: " + github.context.actor)
       const reviewersToAdd = await computeReviewers(ownershipJson, owners, currentReviewersUsers, github.context.actor)
       
-      core.info('final owners: ' + JSON.stringify(reviewersToAdd))
+      core.info('final owners: ' + JSON.stringify([...reviewersToAdd]))
     } else {
       console.log("Pull request not found")
     }
