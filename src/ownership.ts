@@ -50,8 +50,10 @@ function findTeam(teams: Team[], owner: string) {
 
 function findRandomTeamMember(team: Team, actor: string) {
     const availableTeamMembers = team.members.filter((member) => {
-        return member.name !== actor && !member.ignore 
+        console.log("name check? member.name: " + member.name + ", actor: " + actor + ", checking? " + (member.name !== `@${actor}`))
+        return member.name !== `@${actor}` && !member.ignore 
     })
+    console.log("available team members: " + JSON.stringify(availableTeamMembers))
     if (availableTeamMembers.length >= 1) {
         return availableTeamMembers[Math.floor(Math.random() * availableTeamMembers.length)].name
     }
