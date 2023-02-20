@@ -27,9 +27,11 @@ export const computeReviewers = async (
             const randomTeamMember = findRandomTeamMember(matchedTeam, actor)
             console.log(`randomTeamMember: ${randomTeamMember}`)
             if (randomTeamMember && !isAlreadyAReviewer(currentReviewersUsers, randomTeamMember)) {
+                console.log("adding random: " + randomTeamMember)
                 toAdd.add(randomTeamMember)
             }
         } else {
+            console.log("adding owner: " + owner)
             toAdd.add(owner)
         }
     }
